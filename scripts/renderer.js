@@ -69,7 +69,7 @@ class Renderer {
     // color:        array of int [R, G, B, A]
     // ctx:          canvas context
     drawRectangle(left_bottom, right_top, color, ctx) {
-        
+        this.drawLine(left_bottom.x, left_bottom.y, color, ctx);
     }
 
     // center:       object ({x: __, y: __})
