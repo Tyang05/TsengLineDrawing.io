@@ -46,7 +46,10 @@ class Renderer {
 
     // ctx:          canvas context
     drawSlide0(ctx) {
-        
+        let left_bottom = {x:100, y:100};
+        let right_top = {x:500, y:400};
+
+        this.drawRectangle(left_bottom, right_top, [0,0,0,255], ctx);
     }
 
     // ctx:          canvas context
