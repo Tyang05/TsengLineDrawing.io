@@ -49,14 +49,33 @@ class Renderer {
         let left_bottom = {x:100, y:100};
         let right_top = {x:700, y:500};
 
-        this.drawRectangle(left_bottom, right_top, [255,0,0,255], ctx);
+        this.drawRectangle(left_bottom, right_top, [0,0,255,255], ctx);
     }
 
     // ctx:          canvas context
     drawSlide1(ctx) {
         let center = {x:450, y:300};
         let radius = 200;
-        this.drawCircle(center, radius, [255,0,0,255], ctx);
+        this.drawCircle(center, radius, [0,0,255,255], ctx);
+
+        //Draw points here because if in drawCircle method,
+        //it will keep calling itself.
+        //Just copy and paste from drawCircle method
+        if (this.show_points) {
+            let x = 0;
+            let y = 0;
+            let degrees = 0;
+            let change = (Math.PI * 2) / this.num_curve_sections;
+
+            for (let i = 0; i < this.num_curve_sections; i++) {
+                x = center.x + (radius * Math.cos(degrees));
+                y = center.y + (radius * Math.sin(degrees));
+                //instead of putting the points in an array,
+                //just call drawCircle with the x and y coordinates
+                this.drawCircle({x:x, y:y}, 5, [255,0,0,255], ctx);
+                degrees = degrees + change;
+            }
+        }
     }
 
     // ctx:          canvas context
@@ -65,7 +84,7 @@ class Renderer {
         let pt1 = {x:150, y:300};
         let pt2 = {x:600, y:100};
         let pt3 = {x:650, y:300};
-        this.drawBezierCurve(pt0, pt1, pt2, pt3, [255,0,0,255], ctx);
+        this.drawBezierCurve(pt0, pt1, pt2, pt3, [0,0,255,255], ctx);
     }
 
     // ctx:          canvas context
@@ -86,6 +105,12 @@ class Renderer {
         this.drawLine(left_top, right_top, color, ctx); //top line
         this.drawLine(right_bottom, right_top, color, ctx); //right line
 
+        if (this.show_points) {
+            this.drawCircle(left_bottom, 5, [255,0,0,255], ctx);
+            this.drawCircle(right_bottom, 5, [255,0,0,255], ctx);
+            this.drawCircle(left_top, 5, [255,0,0,255], ctx);
+            this.drawCircle(right_top, 5, [255,0,0,255], ctx);
+        }
     }
 
     // center:       object ({x: __, y: __})
@@ -119,7 +144,6 @@ class Renderer {
             //draw from p0 to p1
             this.drawLine(points[i], points[i+1], color, ctx);
         }
-
     }
 
     // pt0:          object ({x: __, y: __})
