@@ -48,15 +48,16 @@ class Renderer {
     drawSlide0(ctx) {
         let left_bottom = {x:100, y:100};
         let right_top = {x:700, y:500};
-
-        this.drawRectangle(left_bottom, right_top, [0,0,255,255], ctx);
+        let color = [0,0,255,255];
+        this.drawRectangle(left_bottom, right_top, color, ctx);
     }
 
     // ctx:          canvas context
     drawSlide1(ctx) {
         let center = {x:450, y:300};
         let radius = 200;
-        this.drawCircle(center, radius, [0,0,255,255], ctx);
+        let color = [0,0,255,255]
+        this.drawCircle(center, radius, color, ctx);
 
         //Draw points here because if in drawCircle method,
         //it will keep calling itself.
@@ -81,15 +82,78 @@ class Renderer {
     // ctx:          canvas context
     drawSlide2(ctx) {
         let pt0 = {x:100, y:100};
-        let pt1 = {x:150, y:300};
+        let pt1 = {x:150, y:500};
         let pt2 = {x:600, y:100};
-        let pt3 = {x:650, y:300};
-        this.drawBezierCurve(pt0, pt1, pt2, pt3, [0,0,255,255], ctx);
+        let pt3 = {x:650, y:500};
+        let color = [0,0,255,255];
+        this.drawBezierCurve(pt0, pt1, pt2, pt3, color, ctx);
     }
 
     // ctx:          canvas context
     drawSlide3(ctx) {
+        let blue = [0,0,255,255];
+        let red = [255,0,0,255];
+        //T
+        this.drawLine({x:25, y:400}, {x:225, y:400}, blue, ctx);
+        this.drawLine({x:125, y:400}, {x:125, y:200}, blue, ctx);
 
+        //s
+        let p1 = {x:200, y:200};
+        let p2 = {x:400, y:250};
+        let p3 = {x:50, y:250};
+        let p4 = {x:250, y:300};
+        this.drawBezierCurve(p1, p2, p3, p4, blue, ctx);
+
+        //e
+        this.drawLine({x:300, y:250}, {x:375, y:250}, blue, ctx);
+        this.drawBezierCurve({x:375, y:250}, {x:375, y:325}, {x:300, y:325}, {x:300, y:250}, blue, ctx);
+        this.drawBezierCurve({x:300, y:250}, {x:300, y:200}, {x:338, y:200}, {x:375, y:200}, blue, ctx);
+
+        //n
+        this.drawLine({x:425, y:200}, {x:425, y:300}, blue, ctx);
+        this.drawBezierCurve({x:425, y:275}, {x:425, y:305}, {x:500, y:305}, {x:500, y:275}, blue, ctx);
+        this.drawLine({x:500, y:275}, {x:500, y:200}, blue, ctx);
+
+        //g
+        this.drawCircle({x:600, y:250}, 50, blue, ctx);
+        this.drawLine({x:650, y:300}, {x:650, y:250}, blue, ctx);
+        this.drawBezierCurve({x:650, y:250}, {x:650, y:50}, {x:600, y:100}, {x:125, y:100}, blue, ctx);
+
+
+        if (this.show_points) {
+            //draw points for circle
+            let center = {x:600, y:250};
+            let radius = 50;
+            let x = 0;
+            let y = 0;
+            let degrees = 0;
+            let change = (Math.PI * 2) / this.num_curve_sections;
+
+            for (let i = 0; i < this.num_curve_sections; i++) {
+                x = center.x + (radius * Math.cos(degrees));
+                y = center.y + (radius * Math.sin(degrees));
+                //instead of putting the points in an array,
+                //just call drawCircle with the x and y coordinates
+                this.drawCircle({x:x, y:y}, 5, [255,0,0,255], ctx);
+                degrees = degrees + change;
+            }
+
+            //T
+            this.drawCircle({x:25, y:400}, 5, red, ctx);
+            this.drawCircle({x:225, y:400}, 5, red, ctx);
+            this.drawCircle({x:125, y:400}, 5, red, ctx);
+            this.drawCircle({x:125, y:200}, 5, red, ctx);
+
+            //n
+            this.drawCircle({x:425, y:200}, 5, red, ctx);
+            this.drawCircle({x:425, y:300}, 5, red, ctx);
+            this.drawCircle({x:500, y:275}, 5, red, ctx);
+            this.drawCircle({x:500, y:200}, 5, red, ctx);
+
+            //g
+            this.drawCircle({x:650, y:300}, 5, red, ctx);
+            this.drawCircle({x:650, y:250}, 5, red, ctx);
+        }
     }
 
     // left_bottom:  object ({x: __, y: __})
@@ -157,10 +221,11 @@ class Renderer {
         let y = 0;
         let t = 0.0;
         let points = [];
-        let counter = 1/this.num_curve_sections;
+        let counter = 1.0 / this.num_curve_sections;
 
-        // i < +1??
-        for (i = 0; i < this.num_curve_sections + 1; i++) {
+        //i < this.num_curve_sections + 1 so that the last
+        //point remains the same.
+        for (let i = 0; i < this.num_curve_sections+1; i++) {
             x = Math.pow((1-t), 3) * pt0.x + 3 * Math.pow((1-t), 2) * t * pt1.x + 3 * (1-t) * Math.pow(t, 2) * pt2.x + Math.pow(t, 3) * pt3.x;
             y = Math.pow((1-t), 3) * pt0.y + 3 * Math.pow((1-t), 2) * t * pt1.y + 3 * (1-t) * Math.pow(t, 2) * pt2.y + Math.pow(t, 3) * pt3.y;
 
@@ -169,8 +234,14 @@ class Renderer {
             t = t + counter;
         }
 
-        for (i = 0; i < points.length - 1; i++) {
+        for (let i = 0; i < points.length - 1; i++) {
             this.drawLine(points[i], points[i + 1], color, ctx);
+        }
+
+        if (this.show_points) {
+            for (let i = 0; i < points.length; i++) {
+                this.drawCircle(points[i], 5, [255,0,0,255], ctx);
+            }
         }
         
 
