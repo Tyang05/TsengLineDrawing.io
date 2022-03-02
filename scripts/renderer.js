@@ -242,6 +242,8 @@ class Renderer {
             for (let i = 0; i < points.length; i++) {
                 this.drawCircle(points[i], 5, [255,0,0,255], ctx);
             }
+            this.drawCircle(pt1, 5, [0,255,0,255], ctx);
+            this.drawCircle(pt2, 5, [0,255,0,255], ctx);
         }
         
 
